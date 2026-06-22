@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - AeroPark</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Custom stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg glass-nav">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="/index.html">
+        <i class="fa-solid fa-square-parking text-primary fs-3 me-2" style="color: var(--accent-color) !important;"></i>
+        <span class="fw-bold fs-4">AeroPark</span>
+      </a>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item me-3">
+            <button class="theme-toggle" id="theme-toggle-btn" title="Toggle Light/Dark Mode">
+              <i class="fas fa-moon"></i>
+            </button>
+          </li>
+          <li class="nav-item dropdown">
+            <span class="fw-semibold text-secondary">Hello, <span id="dashboard-user-name" class="text-primary">Loading...</span></span>
+            <button onclick="logoutUser()" class="btn-glass-secondary px-3 py-2 ms-3"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="container py-5 animated-fade-in">
+    <!-- Top Stats Row -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="glass-card text-center py-4">
+          <i class="fa-solid fa-square-parking text-primary fs-2 mb-2"></i>
+          <h5 class="text-secondary small fw-semibold uppercase mb-1">Available Slots</h5>
+          <h2 class="fw-extrabold m-0 text-success" id="stat-slots-available">-</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="glass-card text-center py-4">
+          <i class="fa-solid fa-car-side text-primary fs-2 mb-2"></i>
+          <h5 class="text-secondary small fw-semibold uppercase mb-1">Occupied Spots</h5>
+          <h2 class="fw-extrabold m-0 text-danger" id="stat-slots-occupied">-</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="glass-card text-center py-4">
+          <i class="fa-solid fa-clock text-primary fs-2 mb-2"></i>
+          <h5 class="text-secondary small fw-semibold uppercase mb-1">Reserved Spots</h5>
+          <h2 class="fw-extrabold m-0 text-warning" id="stat-slots-reserved">-</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="glass-card text-center py-4">
+          <i class="fa-solid fa-leaf text-success fs-2 mb-2"></i>
+          <h5 class="text-secondary small fw-semibold uppercase mb-1">My Carbon Offset</h5>
+          <h2 class="fw-extrabold m-0 text-success" id="stat-co2-saved">0g</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Reservations Alert/Banner -->
+    <div id="active-booking-banner" style="display: none;">
+      <div class="alert-glass border-warning mb-4">
+        <div class="d-flex align-items-center w-100 justify-content-between flex-wrap gap-3">
+          <div class="d-flex align-items-center">
+            <i class="fa-solid fa-circle-exclamation text-warning fs-3 me-3"></i>
+            <div>
+              <h5 class="fw-bold mb-1">Active Booking: <span id="banner-booking-number" class="text-primary">-</span></h5>
+              <p class="mb-0 small text-secondary">Slot: <span id="banner-slot-number" class="fw-bold">-</span> | Vehicle: <span id="banner-vehicle-plate">-</span> | Status: <span class="badge bg-warning" id="banner-status">-</span></p>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <!-- Simulated Entry Trigger -->
+            <button id="btn-simulate-entry" class="btn-glass px-4 py-2" style="display: none;">Gate Check-In (Entry)</button>
+            <!-- Simulated Exit Trigger -->
+            <button id="btn-simulate-exit" class="btn-glass px-4 py-2" style="display: none;">Gate Checkout (Exit & Pay)</button>
+            <button id="btn-show-qr" class="btn-glass-secondary px-3 py-2"><i class="fas fa-qrcode"></i> View QR</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Workspace Grid -->
+    <div class="row g-4">
+      <!-- Left side: Map selection, AI recommended spot -->
+      <div class="col-lg-8">
+        <!-- AI Recommendation Section -->
+        <div class="glass-card mb-4 border-primary border-2">
+          <h3 class="fw-bold mb-3 d-flex align-items-center">
+            <i class="fa-solid fa-brain text-primary me-2"></i>
+            AI Best Slot Recommendation
+          </h3>
+          <div class="row g-3 align-items-end">
+            <div class="col-md-5">
+              <label for="ai-vehicle-select" class="form-label small fw-semibold text-secondary">Select Your Vehicle</label>
+              <select id="ai-vehicle-select" class="form-glass">
+                <option value="">-- Choose registered vehicle --</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <div class="form-check form-switch mb-2">
+                <input class="form-check-input" type="checkbox" role="switch" id="ai-disabled-switch">
+                <label class="form-check-label small fw-semibold text-secondary" for="ai-disabled-switch">Requires Disabled Access</label>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <button id="btn-get-recommendation" class="btn-glass w-100 py-3">Get Best Slot</button>
+            </div>
+          </div>
+          <div id="recommendation-result" class="mt-4" style="display: none;">
+            <div class="p-3 rounded-4 bg-primary-subtle border border-primary-subtle d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <i class="fa-solid fa-star text-primary fs-3 me-3"></i>
+                <div>
+                  <h5 class="fw-bold mb-1">Recommended Spot: <span id="rec-slot-number" class="text-primary">-</span></h5>
+                  <p class="mb-0 small text-secondary">Floor: <span id="rec-floor-name">-</span> | Type: <span id="rec-slot-type">-</span> | Est. Rate: <span id="rec-rate">-</span></p>
+                </div>
+              </div>
+              <button id="btn-reserve-rec" class="btn-glass px-4">Reserve Spot</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive floor maps -->
+        <div class="glass-card">
+          <div class="d-flex justify-content-between align-items-center flex-wrap mb-4 gap-3">
+            <h3 class="fw-bold m-0"><i class="fa-solid fa-map-location-dot text-primary me-2"></i>Interactive Floor Layout Map</h3>
+            <!-- Floor tabs/selectors -->
+            <ul class="nav nav-pills" id="floor-tab-pills" role="tablist">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+
+          <!-- Color codes description -->
+          <div class="d-flex flex-wrap gap-3 mb-4 p-3 rounded-4 bg-opacity-10 bg-secondary small">
+            <div class="d-flex align-items-center"><span class="badge bg-success rounded-circle me-1" style="width: 12px; height: 12px;">&nbsp;</span> Available</div>
+            <div class="d-flex align-items-center"><span class="badge bg-danger rounded-circle me-1" style="width: 12px; height: 12px;">&nbsp;</span> Occupied</div>
+            <div class="d-flex align-items-center"><span class="badge bg-warning rounded-circle me-1" style="width: 12px; height: 12px;">&nbsp;</span> Reserved</div>
+            <div class="d-flex align-items-center"><span class="badge bg-info rounded-circle me-1" style="width: 12px; height: 12px;">&nbsp;</span> EV Charger</div>
+            <div class="d-flex align-items-center"><span class="badge bg-purple rounded-circle me-1" style="width: 12px; height: 12px; background-color: var(--slot-disabled) !important;">&nbsp;</span> Disabled Access</div>
+          </div>
+
+          <!-- Floor Slots Map container -->
+          <div class="floor-map-container" id="slots-map-grid">
+            <!-- Slots dynamically rendered -->
+          </div>
+
+          <!-- Quick Reserve selected slot panel -->
+          <div id="selected-slot-action-panel" class="mt-4" style="display: none;">
+            <div class="p-4 rounded-4 bg-secondary bg-opacity-10 border d-flex flex-wrap align-items-end justify-content-between gap-3">
+              <div>
+                <h5 class="fw-bold mb-1">Selected Slot: <span id="sel-slot-number" class="text-primary">-</span></h5>
+                <p class="small text-secondary mb-0">Type: <span id="sel-slot-type">-</span> | Current Hourly Rate: <span id="sel-slot-rate">-</span></p>
+              </div>
+              <div class="d-flex align-items-end gap-3 flex-wrap">
+                <div>
+                  <label for="sel-vehicle-select" class="form-label small fw-semibold text-secondary mb-1">Vehicle</label>
+                  <select id="sel-vehicle-select" class="form-glass" style="min-width: 180px;">
+                    <!-- Vehicles populated -->
+                  </select>
+                </div>
+                <button id="btn-reserve-selected" class="btn-glass px-4">Reserve selected Slot</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- History -->
+        <div class="glass-card mt-4">
+          <h3 class="fw-bold mb-4"><i class="fa-solid fa-list-check text-primary me-2"></i>My Bookings & Receipts</h3>
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th class="text-secondary small uppercase">Booking Ref</th>
+                  <th class="text-secondary small uppercase">Slot / Floor</th>
+                  <th class="text-secondary small uppercase">Vehicle</th>
+                  <th class="text-secondary small uppercase">Parked Duration</th>
+                  <th class="text-secondary small uppercase">Paid Amount</th>
+                  <th class="text-secondary small uppercase">Status</th>
+                  <th class="text-secondary small uppercase">Action</th>
+                </tr>
+              </thead>
+              <tbody id="bookings-history-rows">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: Vehicle Registration, Notifications inbox -->
+      <div class="col-lg-4">
+        <!-- Vehicle Registration Card -->
+        <div class="glass-card">
+          <h3 class="fw-bold mb-3"><i class="fa-solid fa-car text-primary me-2"></i>My Registered Vehicles</h3>
+          <div id="user-vehicles-list" class="list-group list-group-flush mb-4">
+            <!-- Dynamically populated -->
+          </div>
+          <hr class="border-secondary opacity-25 mb-4">
+          <h4 class="fw-bold mb-3">Add New Vehicle</h4>
+          <form id="vehicle-reg-form">
+            <div class="mb-3">
+              <label for="reg-plate" class="form-label small fw-semibold text-secondary">License Plate</label>
+              <input type="text" class="form-glass" id="reg-plate" required placeholder="e.g. KA-01-ME-1234">
+            </div>
+            <div class="mb-3">
+              <label for="reg-type" class="form-label small fw-semibold text-secondary">Vehicle Type</label>
+              <select id="reg-type" class="form-glass" required>
+                <option value="FOUR_WHEELER">Four-Wheeler (Standard)</option>
+                <option value="TWO_WHEELER">Two-Wheeler (Bike/Scooter)</option>
+                <option value="EV">Electric Vehicle (EV)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="reg-model" class="form-label small fw-semibold text-secondary">Model Description</label>
+              <input type="text" class="form-glass" id="reg-model" placeholder="e.g. Tesla Model 3">
+            </div>
+            <button type="submit" class="btn-glass w-100">Add Vehicle</button>
+          </form>
+        </div>
+
+        <!-- Smart Notifications Card -->
+        <div class="glass-card mt-4">
+          <h3 class="fw-bold mb-3"><i class="fa-solid fa-bell text-primary me-2"></i>Notifications</h3>
+          <div id="notifications-list" style="max-height: 400px; overflow-y: auto;">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Booking Confirmation QR -->
+  <div class="modal fade" id="qrModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 380px;">
+      <div class="modal-content glass-card p-4 border-0">
+        <div class="modal-header border-0 p-0 mb-3 justify-content-between">
+          <h4 class="fw-bold m-0">Booking Confirmation</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center p-0">
+          <p class="small text-secondary mb-4">Scan this QR Code at the entry gate barrier reader to open the automatic gate.</p>
+          <div class="p-3 bg-white d-inline-block rounded-4 mb-4 border border-secondary border-opacity-25">
+            <!-- Simulated QR code rendering using mock canvas/image -->
+            <div class="d-flex flex-column align-items-center justify-content-center" style="width: 200px; height: 200px; background-color: #eee; border-radius: 8px;">
+              <i class="fa-solid fa-qrcode fs-1 text-dark mb-2"></i>
+              <span class="fw-bold small text-dark" id="modal-qr-code-text">-</span>
+            </div>
+          </div>
+          <div class="text-start rounded-4 bg-secondary bg-opacity-10 p-3 small">
+            <div><strong>Booking ID:</strong> <span id="modal-booking-id">-</span></div>
+            <div><strong>Slot Number:</strong> <span id="modal-slot-number">-</span></div>
+            <div><strong>Vehicle Plate:</strong> <span id="modal-vehicle-plate">-</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Payment Simulation Modal -->
+  <div class="modal fade" id="paymentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+      <div class="modal-content glass-card p-4 border-0">
+        <div class="modal-header border-0 p-0 mb-3 justify-content-between">
+          <h4 class="fw-bold m-0">Secure Payment Checkout</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="text-center mb-4">
+            <h5 class="text-secondary small fw-semibold uppercase mb-1">Invoice Total</h5>
+            <h2 class="fw-extrabold m-0 text-primary" id="checkout-amount">₹0.00</h2>
+            <p class="small text-secondary mt-1">Booking Ref: <span id="checkout-booking-number" class="fw-bold">-</span></p>
+          </div>
+          
+          <form id="checkout-payment-form">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold text-secondary">Payment Method</label>
+              <div class="d-flex gap-2">
+                <input type="radio" class="btn-check" name="pay-method" id="pay-card" value="CARD" checked>
+                <label class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center" for="pay-card">
+                  <i class="fa-regular fa-credit-card fs-4 mb-1"></i> Card
+                </label>
+                <input type="radio" class="btn-check" name="pay-method" id="pay-upi" value="UPI">
+                <label class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center" for="pay-upi">
+                  <i class="fa-solid fa-mobile-screen fs-4 mb-1"></i> UPI
+                </label>
+                <input type="radio" class="btn-check" name="pay-method" id="pay-wallet" value="WALLET">
+                <label class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center" for="pay-wallet">
+                  <i class="fa-solid fa-wallet fs-4 mb-1"></i> Wallet
+                </label>
+              </div>
+            </div>
+            
+            <!-- Simulated Credit Card Details (shows if CARD selected) -->
+            <div id="card-details-fields" class="mb-4">
+              <div class="mb-2">
+                <label class="form-label small text-secondary">Card Number</label>
+                <input type="text" class="form-glass" placeholder="4111 2222 3333 4444" value="4111 2222 3333 4444">
+              </div>
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label small text-secondary">Expiry</label>
+                  <input type="text" class="form-glass" placeholder="MM/YY" value="12/29">
+                </div>
+                <div class="col-6">
+                  <label class="form-label small text-secondary">CVV</label>
+                  <input type="password" class="form-glass" placeholder="123" value="123">
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-glass w-100 py-3 fs-5">Authorize Payment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Global script -->
+  <script src="/js/main.js"></script>
+  <!-- Dashboard script -->
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

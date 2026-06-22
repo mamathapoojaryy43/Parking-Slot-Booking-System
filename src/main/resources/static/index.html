@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AeroPark - Future-Ready Smart Parking System</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Custom stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg glass-nav">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <i class="fa-solid fa-square-parking text-primary fs-3 me-2" style="color: var(--accent-color) !important;"></i>
+        <span class="fw-bold fs-4">AeroPark</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item"><a class="nav-link fw-semibold px-3" href="#features">Smart Features</a></li>
+          <li class="nav-item"><a class="nav-link fw-semibold px-3" href="#pricing">Plans</a></li>
+          <li class="nav-item me-3">
+            <button class="theme-toggle" id="theme-toggle-btn" title="Toggle Light/Dark Mode">
+              <i class="fas fa-moon"></i>
+            </button>
+          </li>
+          <!-- Guest Navigation -->
+          <div id="guest-nav-links" class="d-flex align-items-center">
+            <li class="nav-item"><a class="btn-glass-secondary me-2 px-4 py-2" href="/login.html">Login</a></li>
+            <li class="nav-item"><a class="btn-glass px-4 py-2 text-decoration-none" href="/register.html">Sign Up</a></li>
+          </div>
+          <!-- User Navigation (Authenticated) -->
+          <div id="user-nav-links" class="d-flex align-items-center" style="display: none !important;">
+            <li class="nav-item me-3">
+              <span class="fw-semibold text-secondary">Hello, <span id="nav-user-name" class="text-primary">User</span></span>
+            </li>
+            <li class="nav-item"><a class="btn-glass px-4 py-2 text-decoration-none" href="/dashboard.html">Dashboard</a></li>
+            <li class="nav-item ms-2"><button onclick="logoutUser()" class="btn-glass-secondary px-3 py-2"><i class="fas fa-sign-out-alt"></i></button></li>
+          </div>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="py-5 my-5 animated-fade-in">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold mb-3">AI-Powered & IoT Ready</span>
+          <h1 class="display-4 fw-extrabold mb-4" style="line-height: 1.2;">Smart Parking, <br><span style="color: var(--accent-color);">Redefined for the Future</span></h1>
+          <p class="fs-5 text-secondary mb-5">Say goodbye to circling blocks. Reserve slots in advance, get smart slot recommendations based on your vehicle type, charge your EV, track parking duration automatically, and monitor your carbon savings in real time.</p>
+          <div class="d-flex gap-3">
+            <a href="/register.html" class="btn-glass btn-lg px-4 py-3 text-decoration-none">Reserve a Slot Now</a>
+            <a href="#features" class="btn-glass-secondary btn-lg px-4 py-3 text-decoration-none">Explore Features</a>
+          </div>
+        </div>
+        <div class="col-lg-6 mt-5 mt-lg-0 text-center">
+          <div class="glass-card py-5 px-4 shadow-lg border-2">
+            <div class="row text-start g-4">
+              <div class="col-6">
+                <div class="d-flex align-items-center mb-2">
+                  <i class="fa-solid fa-circle-check text-success fs-4 me-2"></i>
+                  <h4 class="m-0 fw-bold">Live Status</h4>
+                </div>
+                <p class="small text-secondary">Real-time floor wise slot occupancy monitoring</p>
+              </div>
+              <div class="col-6">
+                <div class="d-flex align-items-center mb-2">
+                  <i class="fa-solid fa-bolt text-info fs-4 me-2"></i>
+                  <h4 class="m-0 fw-bold">EV Stations</h4>
+                </div>
+                <p class="small text-secondary">Charge your vehicle while parked with auto-billing</p>
+              </div>
+              <div class="col-6">
+                <div class="d-flex align-items-center mb-2">
+                  <i class="fa-solid fa-brain text-purple fs-4 me-2" style="color: var(--slot-disabled);"></i>
+                  <h4 class="m-0 fw-bold">AI Recs</h4>
+                </div>
+                <p class="small text-secondary">Best proximity slot suggestion algorithm</p>
+              </div>
+              <div class="col-6">
+                <div class="d-flex align-items-center mb-2">
+                  <i class="fa-solid fa-leaf text-success fs-4 me-2"></i>
+                  <h4 class="m-0 fw-bold">Green Parking</h4>
+                </div>
+                <p class="small text-secondary">Reduced search time offsets carbon footprint</p>
+              </div>
+            </div>
+            <hr class="my-4 border-secondary opacity-25">
+            <div class="d-flex justify-content-around text-center">
+              <div>
+                <h2 class="fw-bold mb-0 text-primary">3</h2>
+                <small class="text-secondary uppercase fw-semibold">Floors</small>
+              </div>
+              <div>
+                <h2 class="fw-bold mb-0 text-primary">45+</h2>
+                <small class="text-secondary uppercase fw-semibold">Smart Slots</small>
+              </div>
+              <div>
+                <h2 class="fw-bold mb-0 text-primary">100%</h2>
+                <small class="text-secondary uppercase fw-semibold">Automated</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Features Section -->
+  <section id="features" class="py-5 my-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-6 fw-bold">Intelligent Features</h2>
+        <p class="text-secondary col-lg-6 mx-auto">AeroPark utilizes state-of-the-art software systems to optimize space utilization, eliminate congestion, and automate payments.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="glass-card glass-card-hover h-100 text-center">
+            <i class="fa-solid fa-brain fs-1 text-primary mb-4"></i>
+            <h3 class="fw-bold mb-3">Best-Slot Recommendation</h3>
+            <p class="text-secondary small">Automatically detects your vehicle profile (2-Wheeler, 4-Wheeler, EV, Disabled Access) and allocates the closest slot near exits or elevators to minimize walking time.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-card glass-card-hover h-100 text-center">
+            <i class="fa-solid fa-chart-line fs-1 text-primary mb-4"></i>
+            <h3 class="fw-bold mb-3">Dynamic Pricing Engine</h3>
+            <p class="text-secondary small">Smart rates adapt to peak occupancy periods. Save money by booking during off-peak slots, and experience high-efficiency utilization when occupancy surges.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-card glass-card-hover h-100 text-center">
+            <i class="fa-solid fa-qrcode fs-1 text-primary mb-4"></i>
+            <h3 class="fw-bold mb-3">QR Confirmation & Entry</h3>
+            <p class="text-secondary small">Fast check-in via mobile-friendly QR codes. Drive up, scan at the gate, and the system automatically checks you in, updates slot lights, and begins billing.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Plans -->
+  <section id="pricing" class="py-5 my-5 bg-opacity-10 bg-secondary">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="display-6 fw-bold">Flexible Parking Plans</h2>
+        <p class="text-secondary">Choose the rate structure that matches your lifestyle and parking frequency.</p>
+      </div>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-3">
+          <div class="glass-card text-center h-100">
+            <h4 class="fw-bold text-muted uppercase">Hourly</h4>
+            <h2 class="fw-extrabold my-3">₹10 - ₹25<span class="fs-6 fw-normal">/hr</span></h2>
+            <p class="small text-secondary mb-4">Best for short stays, dynamic pricing applies.</p>
+            <ul class="list-unstyled mb-4 text-start">
+              <li><i class="fas fa-check text-success me-2"></i>AI Slot Recommendation</li>
+              <li><i class="fas fa-check text-success me-2"></i>Mobile QR Code entry</li>
+            </ul>
+            <a href="/login.html" class="btn-glass-secondary w-100">Get Started</a>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="glass-card text-center border-primary border-2 h-100" style="position: relative;">
+            <span class="badge bg-primary position-absolute top-0 start-50 translate-middle">Popular</span>
+            <h4 class="fw-bold text-primary uppercase mt-2">Daily Pass</h4>
+            <h2 class="fw-extrabold my-3">₹50<span class="fs-6 fw-normal">/day</span></h2>
+            <p class="small text-secondary mb-4">Ideal for daily commuters or workers.</p>
+            <ul class="list-unstyled mb-4 text-start">
+              <li><i class="fas fa-check text-success me-2"></i>Unrestricted Entry & Exit</li>
+              <li><i class="fas fa-check text-success me-2"></i>Priority 4W/EV Slots</li>
+              <li><i class="fas fa-check text-success me-2"></i>Weekly discount options</li>
+            </ul>
+            <a href="/login.html" class="btn-glass w-100">Get Started</a>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="glass-card text-center h-100">
+            <h4 class="fw-bold text-muted uppercase">Monthly subscription</h4>
+            <h2 class="fw-extrabold my-3">₹250<span class="fs-6 fw-normal">/mo</span></h2>
+            <p class="small text-secondary mb-4">For long-term residents and office blocks.</p>
+            <ul class="list-unstyled mb-4 text-start">
+              <li><i class="fas fa-check text-success me-2"></i>Permanent Reserved Slot</li>
+              <li><i class="fas fa-check text-success me-2"></i>Unlimited EV charging</li>
+              <li><i class="fas fa-check text-success me-2"></i>Full dashboard reports</li>
+            </ul>
+            <a href="/login.html" class="btn-glass-secondary w-100">Get Started</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container text-center">
+      <div class="d-flex justify-content-center align-items-center mb-3">
+        <i class="fa-solid fa-square-parking text-primary fs-3 me-2" style="color: var(--accent-color) !important;"></i>
+        <span class="fw-bold fs-4">AeroPark</span>
+      </div>
+      <p class="small text-secondary mb-2">&copy; 2026 AeroPark Systems Inc. All Rights Reserved.</p>
+      <p class="small text-secondary">Built for smart cities & green carbon reductions.</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Global script -->
+  <script src="/js/main.js"></script>
+</body>
+</html>

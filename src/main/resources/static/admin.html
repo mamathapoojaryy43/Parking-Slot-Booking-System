@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - AeroPark</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Custom stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg glass-nav">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="/index.html">
+        <i class="fa-solid fa-square-parking text-primary fs-3 me-2" style="color: var(--accent-color) !important;"></i>
+        <span class="fw-bold fs-4">AeroPark Control Center</span>
+      </a>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item me-3">
+            <button class="theme-toggle" id="theme-toggle-btn" title="Toggle Light/Dark Mode">
+              <i class="fas fa-moon"></i>
+            </button>
+          </li>
+          <li class="nav-item">
+            <span class="fw-semibold text-secondary">Hello, <span id="admin-user-name" class="text-danger">Admin</span></span>
+            <button onclick="logoutUser()" class="btn-glass-secondary px-3 py-2 ms-3"><i class="fas fa-sign-out-alt"></i> Log Out</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Workstation -->
+  <main class="container py-5 animated-fade-in">
+    <!-- Top KPI stats -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="glass-card text-center py-4">
+          <i class="fa-solid fa-hand-holding-dollar text-primary fs-2 mb-2"></i>
+          <h5 class="text-secondary small fw-semibold uppercase mb-1">Total Revenue (7d)</h5>
+          <h2 class="fw-extrabold m-0 text-primary" id="kpi-revenue">₹0.00</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="glass-card text-center py-4">
+          <i class="fa-solid fa-chart-pie text-primary fs-2 mb-2"></i>
+          <h5 class="text-secondary small fw-semibold uppercase mb-1">Occupancy Rate</h5>
+          <h2 class="fw-extrabold m-0 text-info" id="kpi-occupancy">0%</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="glass-card text-center py-4">
+          <i class="fa-solid fa-calendar-check text-primary fs-2 mb-2"></i>
+          <h5 class="text-secondary small fw-semibold uppercase mb-1">Today's Bookings</h5>
+          <h2 class="fw-extrabold m-0 text-success" id="kpi-bookings">0</h2>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="glass-card text-center py-4">
+          <i class="fa-solid fa-leaf text-success fs-2 mb-2"></i>
+          <h5 class="text-secondary small fw-semibold uppercase mb-1">Eco Saving Offsets</h5>
+          <h2 class="fw-extrabold m-0 text-success" id="kpi-co2">0g CO2</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+      <div class="col-lg-6">
+        <div class="glass-card">
+          <h4 class="fw-bold mb-3"><i class="fa-solid fa-chart-line text-primary me-2"></i>Revenue Trend & Bookings count</h4>
+          <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="glass-card">
+          <h4 class="fw-bold mb-3"><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>Peak-Hour Occupancy Prediction</h4>
+          <div class="chart-container">
+            <canvas id="predictionChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Left side columns: pricing controls, floor/slot additions -->
+      <div class="col-lg-4">
+        <!-- Dynamic Pricing configuration card -->
+        <div class="glass-card">
+          <h4 class="fw-bold mb-3 d-flex align-items-center">
+            <i class="fa-solid fa-sliders text-primary me-2"></i>
+            Dynamic Pricing Engine
+          </h4>
+          <form id="pricing-config-form">
+            <div class="form-check form-switch mb-3">
+              <input class="form-check-input" type="checkbox" role="switch" id="pricing-enabled">
+              <label class="form-check-label fw-semibold" for="pricing-enabled">Enable Dynamic Pricing</label>
+            </div>
+            <div class="mb-3">
+              <label for="peak-multiplier" class="form-label small text-secondary">Peak pricing Multiplier (>80% Occ.)</label>
+              <input type="number" step="0.05" class="form-glass" id="peak-multiplier" required>
+            </div>
+            <div class="mb-3">
+              <label for="medium-multiplier" class="form-label small text-secondary">Mid-Peak pricing Multiplier (>60% Occ.)</label>
+              <input type="number" step="0.05" class="form-glass" id="medium-multiplier" required>
+            </div>
+            <div class="mb-3">
+              <label for="discount-multiplier" class="form-label small text-secondary">Discount pricing Multiplier (<30% Occ.)</label>
+              <input type="number" step="0.05" class="form-glass" id="discount-multiplier" required>
+            </div>
+            <button type="submit" class="btn-glass w-100">Save Configuration</button>
+          </form>
+        </div>
+
+        <!-- Management tools (add floors & slots) -->
+        <div class="glass-card mt-4">
+          <h4 class="fw-bold mb-3"><i class="fa-solid fa-plus text-primary me-2"></i>Add Parking Level (Floor)</h4>
+          <form id="add-floor-form">
+            <div class="mb-2">
+              <label class="form-label small text-secondary">Floor Number</label>
+              <input type="number" class="form-glass" id="new-floor-num" placeholder="e.g. 3" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small text-secondary">Floor Name</label>
+              <input type="text" class="form-glass" id="new-floor-name" placeholder="e.g. Floor 3" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small text-secondary">Capacity</label>
+              <input type="number" class="form-glass" id="new-floor-cap" placeholder="15" required>
+            </div>
+            <button type="submit" class="btn-glass w-100">Create Floor</button>
+          </form>
+        </div>
+
+        <div class="glass-card mt-4">
+          <h4 class="fw-bold mb-3"><i class="fa-solid fa-plus text-primary me-2"></i>Add Parking Slot</h4>
+          <form id="add-slot-form">
+            <div class="mb-2">
+              <label class="form-label small text-secondary">Slot Code / Number</label>
+              <input type="text" class="form-glass" id="new-slot-num" placeholder="e.g. F2-16" required>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small text-secondary">Slot Type</label>
+              <select class="form-glass" id="new-slot-type" required>
+                <option value="FOUR_WHEELER">Four-Wheeler</option>
+                <option value="TWO_WHEELER">Two-Wheeler</option>
+                <option value="EV">EV Charging</option>
+                <option value="DISABLED">Disabled Access</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small text-secondary">Target Floor</label>
+              <select class="form-glass" id="new-slot-floor" required>
+                <!-- Populated via API -->
+              </select>
+            </div>
+            <button type="submit" class="btn-glass w-100">Create Slot</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right side columns: Users list, Reports Exports -->
+      <div class="col-lg-8">
+        <!-- Reports Exports card -->
+        <div class="glass-card mb-4 border-primary border-2">
+          <h4 class="fw-bold mb-3"><i class="fa-solid fa-file-export text-primary me-2"></i>Export Reports (Excel / CSV)</h4>
+          <p class="text-secondary small">Download bulk database transaction logs directly in CSV formats compatible with MS Excel.</p>
+          <div class="d-flex gap-3">
+            <a href="/api/admin/export/revenue" class="btn-glass text-decoration-none d-inline-flex align-items-center">
+              <i class="fa-solid fa-file-excel me-2"></i> Export Revenue Sheet
+            </a>
+            <a href="/api/admin/export/bookings" class="btn-glass text-decoration-none d-inline-flex align-items-center">
+              <i class="fa-solid fa-file-excel me-2"></i> Export Bookings List
+            </a>
+          </div>
+        </div>
+
+        <!-- Users Management list -->
+        <div class="glass-card">
+          <h4 class="fw-bold mb-4"><i class="fa-solid fa-users text-primary me-2"></i>User Accounts & Roles</h4>
+          <div class="table-responsive">
+            <table class="table align-middle">
+              <thead>
+                <tr>
+                  <th class="text-secondary small uppercase">UID</th>
+                  <th class="text-secondary small uppercase">Username</th>
+                  <th class="text-secondary small uppercase">Email</th>
+                  <th class="text-secondary small uppercase">Full Name</th>
+                  <th class="text-secondary small uppercase">Phone</th>
+                  <th class="text-secondary small uppercase">Access Role</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-rows">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Global script -->
+  <script src="/js/main.js"></script>
+  <!-- Admin script -->
+  <script src="/js/admin.js"></script>
+</body>
+</html>
